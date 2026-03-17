@@ -1,4 +1,3 @@
 resources:
   - namespace.yaml
-  - helmrepository.yaml
-  - helmrelease.yaml
+  - nfs-provisioner.yaml
