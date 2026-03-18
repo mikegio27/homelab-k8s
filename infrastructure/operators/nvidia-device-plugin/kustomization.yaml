@@ -2,3 +2,5 @@ resources:
   - namespace.yaml
   - helmrepository.yaml
   - helmrelease.yaml
+  - node-label.yaml
+  - runtimeclass.yaml
