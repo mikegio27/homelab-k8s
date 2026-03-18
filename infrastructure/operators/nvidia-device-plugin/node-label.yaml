@@ -4,3 +4,4 @@ metadata:
   name: k3s
   labels:
     gpu: "true"
+    nvidia.com/gpu.present: "true"
