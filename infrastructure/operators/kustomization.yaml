@@ -1,3 +1,4 @@
 resources:
   - cloudnative-pg/
   - nvidia-device-plugin/
+  - metallb/
