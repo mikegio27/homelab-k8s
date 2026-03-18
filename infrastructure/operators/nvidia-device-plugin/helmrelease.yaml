@@ -16,3 +16,4 @@ spec:
   values:
     nodeSelector:
       gpu: "true"
+    runtimeClassName: nvidia
