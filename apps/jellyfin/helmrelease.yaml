@@ -1,0 +1,32 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: jellyfin
+  namespace: jellyfin
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: jellyfin
+      sourceRef:
+        kind: HelmRepository
+        name: jellyfin
+        namespace: jellyfin
+  values:
+    persistence:
+      config:
+        enabled: true
+        storageClass: nfs
+        size: 10Gi
+      media:
+        enabled: true
+        storageClass: nfs
+        size: 15Ti
+    securityContext:
+      privileged: true
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+    nodeSelector:
+      gpu: "true"
+    runtimeClassName: nvidia
