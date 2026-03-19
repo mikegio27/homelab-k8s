@@ -1,0 +1,28 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: redis
+  namespace: redis
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: redis
+      version: "25.3.5"
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: flux-system
+  values:
+    architecture: standalone      # no replication needed for homelab
+    auth:
+      enabled: false              # Authentik connects over cluster-internal DNS, no auth needed
+    master:
+      persistence:
+        enabled: false            # session cache — losing it on restart is fine
+      resources:
+        requests:
+          memory: 64Mi
+          cpu: 50m
+        limits:
+          memory: 128Mi
