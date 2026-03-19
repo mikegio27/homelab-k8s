@@ -7,7 +7,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`jellyfin.home.arpa`)
+    - match: Host(`jellyfin.dozydelta.com`)
       kind: Rule
       services:
         - name: jellyfin
