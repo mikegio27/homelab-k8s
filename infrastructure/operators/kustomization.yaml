@@ -5,3 +5,4 @@ resources:
   - redis/
   - sealed-secrets/
   - traefik-config/
+  - tailscale/

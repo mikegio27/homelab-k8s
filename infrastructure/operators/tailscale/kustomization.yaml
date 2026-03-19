@@ -1,0 +1,6 @@
+resources:
+  - namespace.yaml
+  - helmrepository.yaml
+  - sealed-secret.yaml
+  - helmrelease.yaml
+  - connector.yaml
