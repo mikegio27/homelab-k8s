@@ -2,5 +2,6 @@ resources:
   - cloudnative-pg/
   - metallb/
   - nvidia-device-plugin/
+  - redis/
   - sealed-secrets/
   - traefik-config/
