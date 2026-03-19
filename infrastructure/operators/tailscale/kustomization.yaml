@@ -3,4 +3,4 @@ resources:
   - helmrepository.yaml
   - sealed-secret.yaml
   - helmrelease.yaml
-  - connector.yaml
+  # - connector.yaml
