@@ -9,6 +9,9 @@ spec:
   routes:
     - match: Host(`jellyfin.dozydelta.com`)
       kind: Rule
+      middlewares:
+        - name: authentik-forwardauth
+          namespace: authentik
       services:
         - name: jellyfin
           port: 8096
