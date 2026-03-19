@@ -1,0 +1,7 @@
+resources:
+  - namespace.yaml
+  - helmrepository.yaml
+  - sealed-secret.yaml
+  - helmrelease.yaml
+  - clusterissuer.yaml
+  - certificate.yaml
