@@ -4,6 +4,7 @@ resources:
   - metallb/
   - nvidia-device-plugin/
   - redis/
+  - reflector/
   - sealed-secrets/
   - tailscale/
   - traefik-config/
