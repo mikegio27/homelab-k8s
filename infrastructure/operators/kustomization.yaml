@@ -1,5 +1,6 @@
 resources:
   - cloudnative-pg/
-  - nvidia-device-plugin/
   - metallb/
+  - nvidia-device-plugin/
+  - sealed-secrets/
   - traefik-config/
