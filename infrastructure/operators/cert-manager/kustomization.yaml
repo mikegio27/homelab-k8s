@@ -3,5 +3,5 @@ resources:
   - helmrepository.yaml
   - sealed-secret.yaml
   - helmrelease.yaml
-  - clusterissuer.yaml
+  #- clusterissuer.yaml
   #- certificate.yaml
