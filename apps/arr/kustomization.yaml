@@ -4,4 +4,5 @@ resources:
   - prowlarr-deployment.yaml
   - sonarr-deployment.yaml
   - radarr-deployment.yaml
+  - flaresolvarr-deployment.yaml
   - ingress.yaml
