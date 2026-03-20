@@ -10,7 +10,7 @@ spec:
     - match: Host(`qb.dozydelta.com`)
       kind: Rule
       services:
-        - name: qbittorrent-app
+        - name: qbittorrent
           port: 8080
   tls:
     secretName: dozydelta-wildcard-tls
