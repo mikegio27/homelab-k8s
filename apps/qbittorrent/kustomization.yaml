@@ -1,7 +1,7 @@
 resources:
   - namespace.yaml
-  - helmrepository.yaml
+  - deployment.yaml
+  - service.yaml
   - pvc.yaml
   - sealed-secret.yaml
-  - helmrelease.yaml
-  - ingressroute.yaml
+  - ingress.yaml
