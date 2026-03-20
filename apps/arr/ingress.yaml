@@ -54,6 +54,6 @@ spec:
           namespace: authentik
       services:
         - name: prowlarr
-          port: 7878
+          port: 9696
   tls:
     secretName: dozydelta-wildcard-tls

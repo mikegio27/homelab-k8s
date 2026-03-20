@@ -24,7 +24,7 @@ spec:
             - name: TZ
               value: "America/Phoenix"
           ports:
-            - containerPort: 8989
+            - containerPort: 9696
           volumeMounts:
             - name: config
               mountPath: /config
@@ -35,12 +35,6 @@ spec:
       volumes:
         - name: config
           emptyDir: {}
-        - name: downloads
-          persistentVolumeClaim:
-            claimName: arr-downloads
-        - name: media
-          persistentVolumeClaim:
-            claimName: arr-media
 ---
 apiVersion: v1
 kind: Service
@@ -51,5 +45,5 @@ spec:
   selector:
     app: prowlarr
   ports:
-    - port: 8989
-      targetPort: 8989
+    - port: 9696
+      targetPort: 9696
