@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: qbittorrent
+  namespace: qbittorrent
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`qb.dozydelta.com`)
+      kind: Rule
+      services:
+        - name: qbittorrent-app
+          port: 8080
+  tls:
+    secretName: dozydelta-wildcard-tls
