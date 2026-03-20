@@ -7,8 +7,6 @@ spec:
   interval: 10m
   path: ./apps
   prune: true
-  dependsOn:
-    - name: infrastructure
   sourceRef:
     kind: GitRepository
     name: flux-system
