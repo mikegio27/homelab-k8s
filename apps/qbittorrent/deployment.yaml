@@ -13,16 +13,19 @@ spec:
       labels:
         app: qbittorrent
     spec:
-      containers:
+      initContainers:
         - name: gluetun
           image: ghcr.io/qdm12/gluetun:latest
+          restartPolicy: Always    # makes this a native sidecar, not a one-shot init
           securityContext:
             capabilities:
               add:
                 - NET_ADMIN
+          devices:
+            - /dev/net/tun:/dev/net/tun
           env:
             - name: VPN_SERVICE_PROVIDER
-              value: proton
+              value: protonvpn
             - name: VPN_TYPE
               value: wireguard
             - name: WIREGUARD_PRIVATE_KEY
@@ -30,11 +33,6 @@ spec:
                 secretKeyRef:
                   name: qbittorrent-vpn
                   key: WIREGUARD_PRIVATE_KEY
-            - name: WIREGUARD_PUBLIC_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: qbittorrent-vpn
-                  key: WIREGUARD_PUBLIC_KEY
             - name: SERVER_COUNTRIES
               value: "United States"
             - name: FIREWALL_OUTBOUND_SUBNETS
@@ -46,6 +44,7 @@ spec:
             limits:
               memory: 256Mi
 
+      containers:
         - name: qbittorrent
           image: ghcr.io/linuxserver/qbittorrent:latest
           env:
