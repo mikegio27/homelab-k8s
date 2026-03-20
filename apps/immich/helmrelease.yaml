@@ -31,8 +31,6 @@ spec:
           secretKeyRef:
             name: immich-secrets
             key: db-password
-      REDIS_HOSTNAME: "redis-master.redis.svc.cluster.local"
-      REDIS_PORT: "6379"
 
     immich:
       persistence:
@@ -54,8 +52,15 @@ spec:
         requests:
           nvidia.com/gpu: 1
 
+    # postgres subchart gone - using CNPG
     postgresql:
       enabled: false
 
+    # redis subchart gone - use bundled valkey OR external redis
+    # we have external redis already so disable valkey
+    valkey:
+      enabled: false
+
+    # point at your existing redis
     redis:
       enabled: false
