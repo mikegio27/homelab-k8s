@@ -10,8 +10,8 @@ spec:
     - match: Host(`sonarr.dozydelta.com`)
       kind: Rule
       middlewares:
-        - name: authentik-forward-auth
-          namespace: arr
+        - name: ak-outpost-arr
+          namespace: authentik
       services:
         - name: sonarr
           port: 8989
