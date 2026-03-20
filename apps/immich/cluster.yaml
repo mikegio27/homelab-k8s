@@ -5,12 +5,20 @@ metadata:
   namespace: immich
 spec:
   instances: 1
-  storage:
-    size: 10Gi
-    storageClass: nfs
+  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:16.5-v0.3.0
+  postgresql:
+    shared_preload_libraries:
+      - "vectors.so"
   bootstrap:
     initdb:
       database: immich
       owner: immich
       secret:
         name: immich-secrets
+      postInitSQL:
+        - CREATE EXTENSION IF NOT EXISTS "vectors";
+        - CREATE EXTENSION IF NOT EXISTS "cube" CASCADE;
+        - CREATE EXTENSION IF NOT EXISTS "earthdistance" CASCADE;
+  storage:
+    size: 10Gi
+    storageClass: nfs
