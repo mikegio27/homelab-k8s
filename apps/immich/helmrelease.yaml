@@ -1,0 +1,61 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+  namespace: immich
+spec:
+  interval: 24h
+  chart:
+    spec:
+      chart: immich
+      sourceRef:
+        kind: HelmRepository
+        name: immich
+        namespace: immich
+      interval: 24h
+  values:
+    env:
+      DB_HOSTNAME: "immich-db-rw.immich.svc.cluster.local"
+      DB_DATABASE_NAME:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secrets
+            key: db-database
+      DB_USERNAME:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secrets
+            key: db-username
+      DB_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: immich-secrets
+            key: db-password
+      REDIS_HOSTNAME: "redis-master.redis.svc.cluster.local"
+      REDIS_PORT: "6379"
+
+    immich:
+      persistence:
+        library:
+          existingClaim: immich-library
+
+    server:
+      resources:
+        limits:
+          nvidia.com/gpu: 1
+        requests:
+          nvidia.com/gpu: 1
+
+    machine-learning:
+      enabled: true
+      resources:
+        limits:
+          nvidia.com/gpu: 1
+        requests:
+          nvidia.com/gpu: 1
+
+    postgresql:
+      enabled: false
+
+    redis:
+      enabled: false

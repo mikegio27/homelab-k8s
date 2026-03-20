@@ -1,0 +1,8 @@
+resources:
+  - namespace.yaml
+  - helmrepository.yaml
+  - pvc.yaml
+  - sealed-secret.yaml
+  - cluster.yaml
+  - helmrelease.yaml
+  - ingress.yaml
