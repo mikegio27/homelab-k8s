@@ -10,7 +10,7 @@ spec:
     - match: Host(`home.dozydelta.com`)
       kind: Rule
       middlewares:
-        - name: ak-outpost-arr
+        - name: ak-outpost-dozynet
           namespace: authentik
       services:
         - name: dozynet
