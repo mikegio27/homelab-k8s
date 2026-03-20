@@ -30,8 +30,8 @@ spec:
     - match: Host(`radarr.dozydelta.com`)
       kind: Rule
       middlewares:
-        - name: authentik-forward-auth
-          namespace: arr
+        - name: ak-outpost-arr
+          namespace: authentik
       services:
         - name: radarr
           port: 7878
