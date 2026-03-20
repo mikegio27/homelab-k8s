@@ -1,7 +1,7 @@
 resources:
   - namespace.yaml
   - pvcs.yaml
-  #- middleware.yaml
+  - prowlarr-deployment.yaml
   - sonarr-deployment.yaml
   - radarr-deployment.yaml
   - ingress.yaml
