@@ -16,3 +16,14 @@ spec:
     nodeSelector:
       gpu: "true"
     runtimeClassName: nvidia
+    config:
+      map:
+        default: |-
+          version: v1
+          flags:
+            migStrategy: none
+          sharing:
+            timeSlicing:
+              resources:
+              - name: nvidia.com/gpu
+                replicas: 4
