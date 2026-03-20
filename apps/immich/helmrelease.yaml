@@ -31,8 +31,6 @@ spec:
           secretKeyRef:
             name: immich-secrets
             key: db-password
-      REDIS_HOSTNAME: "redis-master.redis.svc.cluster.local"
-      REDIS_PORT: "6379"
 
     immich:
       persistence:
@@ -55,4 +53,4 @@ spec:
           nvidia.com/gpu: 1
 
     valkey:
-      enabled: false
+      enabled: true
