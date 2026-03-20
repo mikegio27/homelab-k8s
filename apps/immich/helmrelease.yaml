@@ -14,23 +14,27 @@ spec:
         namespace: immich
       interval: 24h
   values:
-    env:
-      DB_HOSTNAME: "immich-db-rw.immich.svc.cluster.local"
-      DB_DATABASE_NAME:
-        valueFrom:
-          secretKeyRef:
-            name: immich-secrets
-            key: db-database
-      DB_USERNAME:
-        valueFrom:
-          secretKeyRef:
-            name: immich-secrets
-            key: db-username
-      DB_PASSWORD:
-        valueFrom:
-          secretKeyRef:
-            name: immich-secrets
-            key: db-password
+    controllers:
+      main:
+        containers:
+          main:
+            env:
+              DB_HOSTNAME: "immich-db-rw.immich.svc.cluster.local"
+              DB_DATABASE_NAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: immich-secrets
+                    key: db-database
+              DB_USERNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: immich-secrets
+                    key: db-username
+              DB_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: immich-secrets
+                    key: db-password
 
     immich:
       persistence:
