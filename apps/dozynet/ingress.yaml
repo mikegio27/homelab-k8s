@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dozynet
+  namespace: dozynet
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`home.dozydelta.com`)
+      kind: Rule
+      middlewares:
+        - name: ak-outpost-arr
+          namespace: authentik
+      services:
+        - name: dozynet
+          port: 80
+  tls:
+    secretName: dozydelta-wildcard-tls

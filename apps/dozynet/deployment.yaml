@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dozynet
+  namespace: dozynet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dozynet
+  template:
+    metadata:
+      labels:
+        app: dozynet
+    spec:
+      containers:
+        - name: dozynet
+          image: ghcr.io/mikegio27/dozynet:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 32Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dozynet
+  namespace: dozynet
+spec:
+  selector:
+    app: dozynet
+  ports:
+    - port: 80
+      targetPort: 80
