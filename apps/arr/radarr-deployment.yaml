@@ -35,7 +35,7 @@ spec:
       volumes:
         - name: config
           persistentVolumeClaim:
-            claimName: radarr-config
+            claimName: radarr-config-local
         - name: downloads
           persistentVolumeClaim:
             claimName: arr-downloads

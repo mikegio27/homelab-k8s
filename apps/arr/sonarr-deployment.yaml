@@ -35,7 +35,7 @@ spec:
       volumes:
         - name: config
           persistentVolumeClaim:
-            claimName: sonarr-config
+            claimName: sonarr-config-local
         - name: downloads
           persistentVolumeClaim:
             claimName: arr-downloads
