@@ -30,7 +30,8 @@ spec:
               mountPath: /config
       volumes:
         - name: config
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: prowlarr-config
 ---
 apiVersion: v1
 kind: Service

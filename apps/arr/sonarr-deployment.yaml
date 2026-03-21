@@ -34,7 +34,8 @@ spec:
               mountPath: /media
       volumes:
         - name: config
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: sonarr-config
         - name: downloads
           persistentVolumeClaim:
             claimName: arr-downloads

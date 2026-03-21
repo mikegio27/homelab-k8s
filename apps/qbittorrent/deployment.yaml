@@ -71,7 +71,8 @@ spec:
 
       volumes:
         - name: config
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: qbittorrent-config
         - name: downloads
           persistentVolumeClaim:
             claimName: qbittorrent-downloads
