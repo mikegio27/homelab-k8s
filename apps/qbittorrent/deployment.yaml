@@ -39,10 +39,11 @@ spec:
               value: "10.0.10.0/24,10.42.0.0/16,10.43.0.0/16"
           resources:
             requests:
-              cpu: 100m
-              memory: 64Mi
+              cpu: 250m
+              memory: 512Mi
             limits:
-              memory: 256Mi
+              cpu: 2000m
+              memory: 2Gi
 
       containers:
         - name: qbittorrent
