@@ -1,21 +1,4 @@
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: sonarr-config
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  nfs:
-    server: 10.0.10.20
-    path: /mnt/tank/k3s/sonarr-config
-  claimRef:
-    namespace: arr
-    name: sonarr-config
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: sonarr-config
@@ -23,28 +6,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: ""
-  volumeName: sonarr-config
+  storageClassName: nfs
   resources:
     requests:
       storage: 1Gi
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: radarr-config
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  nfs:
-    server: 10.0.10.20
-    path: /mnt/tank/k3s/radarr-config
-  claimRef:
-    namespace: arr
-    name: radarr-config
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -54,28 +19,10 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: ""
-  volumeName: radarr-config
+  storageClassName: nfs
   resources:
     requests:
       storage: 1Gi
----
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: prowlarr-config
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  nfs:
-    server: 10.0.10.20
-    path: /mnt/tank/k3s/prowlarr-config
-  claimRef:
-    namespace: arr
-    name: prowlarr-config
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -85,8 +32,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: ""
-  volumeName: prowlarr-config
+  storageClassName: nfs
   resources:
     requests:
       storage: 1Gi
