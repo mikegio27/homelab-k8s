@@ -3,4 +3,5 @@ resources:
   - helmrepository.yaml
   - namespace.yaml
   - ingress.yaml
+  - pvc.yaml
   
