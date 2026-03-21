@@ -16,8 +16,7 @@ spec:
     persistence:
       config:
         enabled: true
-        storageClass: nfs
-        size: 10Gi
+        existingClaim: jellyfin-config-local
       media:
         enabled: true
         storageClass: nfs
