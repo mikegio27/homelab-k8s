@@ -9,6 +9,9 @@ spec:
   routes:
     - match: Host(`qb.dozydelta.com`)
       kind: Rule
+      middlewares:
+        - name: ak-outpost-dozynet
+          namespace: authentik
       services:
         - name: qbittorrent
           port: 8080
