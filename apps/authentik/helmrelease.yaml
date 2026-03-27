@@ -35,6 +35,9 @@ spec:
 
     postgresql:
       enabled: true               # uses bundled postgres — swap for CNPG later if you want
+      primary:
+        persistence:
+          storageClass: local-path
       auth:
         existingSecret: authentik-secrets
         secretKeys:

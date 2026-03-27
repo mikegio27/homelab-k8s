@@ -21,8 +21,7 @@ spec:
         existingClaim: jellyfin-config-local
       media:
         enabled: true
-        storageClass: nfs
-        size: 15Ti
+        existingClaim: jellyfin-media
     securityContext:
       privileged: true
     resources:

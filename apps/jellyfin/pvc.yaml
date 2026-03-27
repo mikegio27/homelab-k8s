@@ -1,4 +1,35 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: jellyfin-media
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 15Ti
+  nfs:
+    server: 10.0.10.20
+    path: /mnt/tank/k3s/jellyfin-jellyfin-media-pvc-e6689025-aa9c-4fd3-b617-a935dae8638f
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jellyfin-media
+  namespace: jellyfin
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  volumeName: jellyfin-media
+  resources:
+    requests:
+      storage: 15Ti
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: jellyfin-config-local

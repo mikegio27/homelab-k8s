@@ -26,4 +26,4 @@ spec:
         - CREATE EXTENSION IF NOT EXISTS "earthdistance" CASCADE;
   storage:
     size: 10Gi
-    storageClass: nfs
+    storageClass: local-path
