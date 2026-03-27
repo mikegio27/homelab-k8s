@@ -1,4 +1,66 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: arr-downloads
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 15Ti
+  nfs:
+    path: /mnt/tank/k3s/downloads
+    server: 10.0.10.20
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: arr-downloads
+  namespace: arr
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 15Ti
+  storageClassName: ""
+  volumeName: arr-downloads
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: arr-media
+spec:
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 15Ti
+  nfs:
+    path: /mnt/tank/k3s/jellyfin-jellyfin-media-pvc-e6689025-aa9c-4fd3-b617-a935dae8638f
+    server: 10.0.10.20
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  volumeMode: Filesystem
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: arr-media
+  namespace: arr
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 15Ti
+  storageClassName: ""
+  volumeName: arr-media
+  volumeMode: Filesystem
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: sonarr-config-local
