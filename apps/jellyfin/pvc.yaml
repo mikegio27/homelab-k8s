@@ -9,7 +9,7 @@ spec:
     storage: 15Ti
   nfs:
     server: 10.0.10.20
-    path: /mnt/tank/k3s/jellyfin-jellyfin-media-pvc-e6689025-aa9c-4fd3-b617-a935dae8638f
+    path: /mnt/tank/k3s/jellyfin-media
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
 ---

@@ -9,7 +9,7 @@ spec:
     storage: 10Ti
   nfs:
     server: 10.0.10.20
-    path: /mnt/tank/k3s/immich-immich-library-pvc-0e33a02f-80e1-48a1-8e5a-f427c2984939
+    path: /mnt/tank/k3s/immich-library
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
 ---
