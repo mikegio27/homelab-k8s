@@ -57,3 +57,23 @@ spec:
           port: 9696
   tls:
     secretName: dozydelta-wildcard-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: bazarr
+  namespace: arr
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`bazarr.dozydelta.com`)
+      kind: Rule
+      middlewares:
+        - name: ak-outpost-arr        # Authentik forward-auth, same as rest of arr stack
+          namespace: arr
+      services:
+        - name: bazarr
+          port: 6767
+  tls:
+    secretName: dozydelta-com-tls    # Reflector-mirrored wildcard cert

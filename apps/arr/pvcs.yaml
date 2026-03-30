@@ -39,7 +39,7 @@ spec:
   capacity:
     storage: 15Ti
   nfs:
-    path: /mnt/tank/k3s/jellyfin-jellyfin-media-pvc-e6689025-aa9c-4fd3-b617-a935dae8638f
+    path: /mnt/tank/k3s/jellyfin-media
     server: 10.0.10.20
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
@@ -104,3 +104,16 @@ spec:
   resources:
     requests:
       storage: 1Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bazarr-config
+  namespace: arr
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi
