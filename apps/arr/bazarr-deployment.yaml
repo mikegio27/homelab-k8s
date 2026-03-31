@@ -29,9 +29,7 @@ spec:
             - name: TZ
               value: "America/Phoenix"
           ports:
-            - name: http
-              containerPort: 6767
-              protocol: TCP
+            - containerPort: 6767
           volumeMounts:
             - name: config
               mountPath: /config
