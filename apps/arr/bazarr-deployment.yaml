@@ -55,7 +55,5 @@ spec:
   selector:
     app: bazarr
   ports:
-    - name: http
-      port: 6767
-      targetPort: http
-      protocol: TCP
+    - port: 6767
+      targetPort: 6767
