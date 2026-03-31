@@ -70,7 +70,7 @@ spec:
     - match: Host(`bazarr.dozydelta.com`)
       kind: Rule
       middlewares:
-        - name: ak-outpost-arr        # Authentik forward-auth, same as rest of arr stack
+        - name: ak-outpost-dozynet        # Authentik forward-auth, same as rest of arr stack
           namespace: arr
       services:
         - name: bazarr
