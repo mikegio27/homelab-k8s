@@ -1,6 +1,7 @@
 resources:
   - namespace.yaml
   - pvcs.yaml
+  - bazarr-deployment.yaml
   - prowlarr-deployment.yaml
   - sonarr-deployment.yaml
   - radarr-deployment.yaml
