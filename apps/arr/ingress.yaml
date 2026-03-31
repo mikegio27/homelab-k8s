@@ -71,7 +71,7 @@ spec:
       kind: Rule
       middlewares:
         - name: ak-outpost-dozynet        # Authentik forward-auth, same as rest of arr stack
-          namespace: arr
+          namespace: authentik
       services:
         - name: bazarr
           port: 6767
