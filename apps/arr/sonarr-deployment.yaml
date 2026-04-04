@@ -16,6 +16,7 @@ spec:
       containers:
         - name: sonarr
           image: ghcr.io/linuxserver/sonarr:latest
+          imagePullPolicy: Always
           env:
             - name: PUID
               value: "1000"

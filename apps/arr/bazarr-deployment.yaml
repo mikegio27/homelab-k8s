@@ -21,6 +21,7 @@ spec:
       containers:
         - name: bazarr
           image: lscr.io/linuxserver/bazarr:latest
+          imagePullPolicy: Always
           env:
             - name: PUID
               value: "1000"
