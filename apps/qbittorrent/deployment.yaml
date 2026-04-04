@@ -16,6 +16,7 @@ spec:
       initContainers:
         - name: gluetun
           image: ghcr.io/qdm12/gluetun:latest
+          imagePullPolicy: Always
           restartPolicy: Always    # makes this a native sidecar, not a one-shot init
           securityContext:
             capabilities:
@@ -48,6 +49,7 @@ spec:
       containers:
         - name: qbittorrent
           image: ghcr.io/linuxserver/qbittorrent:latest
+          imagePullPolicy: Always
           env:
             - name: PUID
               value: "1000"
