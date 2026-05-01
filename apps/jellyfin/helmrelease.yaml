@@ -14,7 +14,7 @@ spec:
         namespace: jellyfin
   values:
     image:
-      tag: "10.11.6"
+      tag: "10.11.8"
     persistence:
       config:
         enabled: true
