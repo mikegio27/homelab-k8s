@@ -5,7 +5,7 @@ metadata:
   namespace: discord
 data:
   COMMAND_PREFIX: "!rd"
-  LOG_LEVEL: "DEBUG"
+  LOG_LEVEL: "INFO"
   LOG_FORMAT: "json"
   AI_HISTORY_LIMIT: "50"
   HEALTH_PORT: "8080"
