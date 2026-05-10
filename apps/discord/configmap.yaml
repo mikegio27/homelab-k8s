@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: robodoze-config
+  namespace: discord
 data:
   COMMAND_PREFIX: "!rd"
   LOG_LEVEL: "INFO"
