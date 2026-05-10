@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: robodoze
+  labels:
+    app: robodoze
+spec:
+  replicas: 1
+  # Recreate (not RollingUpdate) prevents two bot instances running simultaneously,
+  # which would cause duplicate command responses during deploys.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: robodoze
+  template:
+    metadata:
+      labels:
+        app: robodoze
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: robodoze
+          image: ghcr.io/mikegio27/RoboDoze:latest
+          imagePullPolicy: Always
+          ports:
+            - name: health
+              containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: robodoze-secret
+            - configMapRef:
+                name: robodoze-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: health
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: health
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
