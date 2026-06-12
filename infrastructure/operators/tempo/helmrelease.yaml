@@ -14,10 +14,11 @@ spec:
         namespace: tempo
   # Monolithic single-binary Tempo. Traces land in MinIO; only the WAL is local.
   values:
-    # Self-scrape Tempo's own metrics (served on :3100).
+    # Self-scrape Tempo's own metrics. NOTE: Tempo's HTTP server is on 3200
+    # (not 3100 like Loki) — both /metrics and the query API live there.
     podAnnotations:
       prometheus.io/scrape: "true"
-      prometheus.io/port: "3100"
+      prometheus.io/port: "3200"
       prometheus.io/path: "/metrics"
     tempo:
       retention: 336h # 14d
