@@ -51,16 +51,17 @@ spec:
         retention_enabled: true
         delete_request_store: s3
 
-    # Pull the MinIO secret into every Loki pod and let Loki expand ${...} in config.
-    global:
+    singleBinary:
+      replicas: 1
+      # Inject the MinIO secret and enable ${...} expansion ON THE SINGLEBINARY
+      # container. global.extraArgs/extraEnvFrom do NOT wire into the SingleBinary
+      # StatefulSet (only per-component keys do) — without these, Loki uses the
+      # literal "${lgtmPassword}" as the S3 key and dies with SignatureDoesNotMatch.
       extraArgs:
         - "-config.expand-env=true"
       extraEnvFrom:
         - secretRef:
             name: lgtm-minio-credentials
-
-    singleBinary:
-      replicas: 1
       podAnnotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "3100"
