@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
         - name: robodoze
-          image: ghcr.io/mikegio27/robodoze:449125d
+          image: ghcr.io/mikegio27/robodoze:0ef2c95
           imagePullPolicy: IfNotPresent
           ports:
             - name: health
