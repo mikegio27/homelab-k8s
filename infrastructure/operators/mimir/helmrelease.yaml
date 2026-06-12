@@ -12,10 +12,6 @@ spec:
         kind: HelmRepository
         name: grafana
         namespace: mimir
-  # mimir-distributed has no monolithic mode, so we run every component at a
-  # single replica with replication_factor 1 — the smallest sensible footprint
-  # for a single-node homelab. The chart already runs each component with
-  # -config.expand-env=true, so ${lgtmPassword} below is expanded at runtime.
   values:
     # Use our standalone MinIO, not the chart's bundled one.
     minio:
@@ -67,7 +63,7 @@ spec:
     query_frontend:
       replicas: 1
     query_scheduler:
-      enabled: false # query-frontend talks to queriers directly at this scale
+      replicas: 1
     store_gateway:
       replicas: 1
       zoneAwareReplication:
