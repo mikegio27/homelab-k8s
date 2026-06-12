@@ -61,6 +61,10 @@ spec:
 
     singleBinary:
       replicas: 1
+      podAnnotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3100"
+        prometheus.io/path: "/metrics"
       persistence:
         enabled: true
         storageClass: local-path

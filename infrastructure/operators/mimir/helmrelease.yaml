@@ -49,10 +49,16 @@ spec:
           compactor_blocks_retention_period: 30d
 
     # ---- single-replica core path ----
+    # Self-scrape each component (metrics on :8080) so the stack is observable.
     distributor:
       replicas: 1
+      podAnnotations: &mimirScrape
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
     ingester:
       replicas: 1
+      podAnnotations: *mimirScrape
       zoneAwareReplication:
         enabled: false
       persistentVolume:
@@ -60,12 +66,16 @@ spec:
         size: 10Gi
     querier:
       replicas: 1
+      podAnnotations: *mimirScrape
     query_frontend:
       replicas: 1
+      podAnnotations: *mimirScrape
     query_scheduler:
       replicas: 1
+      podAnnotations: *mimirScrape
     store_gateway:
       replicas: 1
+      podAnnotations: *mimirScrape
       zoneAwareReplication:
         enabled: false
       persistentVolume:
@@ -73,6 +83,7 @@ spec:
         size: 10Gi
     compactor:
       replicas: 1
+      podAnnotations: *mimirScrape
       persistentVolume:
         storageClass: local-path
         size: 10Gi
