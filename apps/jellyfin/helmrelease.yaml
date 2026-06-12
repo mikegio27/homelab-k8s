@@ -13,14 +13,32 @@ spec:
         name: jellyfin
         namespace: jellyfin
   values:
-    # Jellyfin serves /metrics on 8096, but ONLY after metrics are enabled in its
-    # config: Dashboard > Networking > "Enable Prometheus metrics" (or set
-    # <EnableMetrics>true</EnableMetrics> in config/network.xml), then restart.
-    # Until then this scrape target returns 404 — flip that toggle to activate it.
+    # Jellyfin serves /metrics on 8096, but only when EnableMetrics is true in
+    # config/system.xml. There's no UI toggle and no env var (the env-var PR is
+    # still unmerged), so this initContainer flips the flag before Jellyfin
+    # starts — idempotent and survives pod restarts. Alloy then scrapes it via
+    # the podAnnotations below.
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "8096"
       prometheus.io/path: "/metrics"
+    extraInitContainers:
+      - name: enable-metrics
+        image: busybox:1.36
+        command:
+          - sh
+          - -c
+          - |
+            f=/config/config/system.xml
+            if [ -f "$f" ]; then
+              sed -i 's|<EnableMetrics>false</EnableMetrics>|<EnableMetrics>true</EnableMetrics>|' "$f"
+              echo "set EnableMetrics=true in $f"
+            else
+              echo "$f not present yet (fresh install) — Jellyfin will create it; re-run will enable"
+            fi
+        volumeMounts:
+          - name: config
+            mountPath: /config
     image:
       tag: "10.11.11"
     persistence:

@@ -68,7 +68,7 @@ Self-hosted [Grafana LGTM](https://grafana.com/) stack for metrics, logs and tra
 - **Immich** — `IMMICH_TELEMETRY_INCLUDE=all`, scraped on `:8081`
 - **arr suite** (Sonarr/Radarr/Prowlarr/Bazarr) — `exportarr` sidecar on `:9707`; needs API keys sealed into `arr-exporter-keys` (see `apps/arr/sealed-secret.yaml`)
 - **qBittorrent** — `qbittorrent-exporter` sidecar on `:8090` (relies on qB's localhost auth bypass)
-- **Jellyfin** — annotated for `:8096/metrics`, but inactive until you enable Prometheus metrics in Jellyfin's settings
+- **Jellyfin** — `:8096/metrics`, enabled via an initContainer that sets `EnableMetrics=true` in `system.xml` (no UI toggle / env var exists)
 - **Discord bot** (robodoze) — native `prometheus_client` metrics on `:8080/metrics`
 
 ---
