@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  interval: 24h
+  # The Grafana chart is actively maintained at grafana-community since the
+  # early-2026 migration; this is the current/newest chart.
+  url: https://grafana-community.github.io/helm-charts

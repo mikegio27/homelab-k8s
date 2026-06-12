@@ -32,6 +32,17 @@ spec:
     server:
       ingress:
         enabled: false            # we manage IngressRoute ourselves
+      # Alloy scrapes the metrics port (9300) via pod annotations.
+      podAnnotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9300"
+        prometheus.io/path: "/metrics"
+
+    worker:
+      podAnnotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9300"
+        prometheus.io/path: "/metrics"
 
     postgresql:
       enabled: true               # uses bundled postgres — swap for CNPG later if you want

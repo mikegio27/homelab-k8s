@@ -17,12 +17,21 @@ spec:
     server:
       controllers:
         main:
+          # Alloy scrapes Immich's API metrics (port 8081). We set the telemetry
+          # env directly rather than immich.metrics.enabled, which only emits
+          # Prometheus-Operator ServiceMonitors (not used here).
+          pod:
+            annotations:
+              prometheus.io/scrape: "true"
+              prometheus.io/port: "8081"
+              prometheus.io/path: "/metrics"
           containers:
             main:
               image:
                 tag: v2.7.5
               env:
                 DB_HOSTNAME: "immich-db-rw.immich.svc.cluster.local"
+                IMMICH_TELEMETRY_INCLUDE: "all"
                 DB_DATABASE_NAME:
                   valueFrom:
                     secretKeyRef:

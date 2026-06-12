@@ -12,6 +12,9 @@ spec:
     metadata:
       labels:
         app: sonarr
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9707"
     spec:
       containers:
         - name: sonarr
@@ -33,6 +36,29 @@ spec:
               mountPath: /downloads
             - name: media
               mountPath: /media
+        - name: exportarr
+          image: ghcr.io/onedr0p/exportarr:v2.3.0
+          args: ["sonarr"]
+          env:
+            - name: PORT
+              value: "9707"
+            - name: URL
+              value: "http://localhost:8989"
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: arr-exporter-keys
+                  key: sonarr
+                  optional: true   # pod still starts before the key is sealed
+          ports:
+            - name: metrics
+              containerPort: 9707
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
       volumes:
         - name: config
           persistentVolumeClaim:

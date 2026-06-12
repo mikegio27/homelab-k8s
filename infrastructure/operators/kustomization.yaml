@@ -1,10 +1,15 @@
 resources:
+  - alloy/
   - cert-manager/
   - cloudnative-pg/
+  - loki/
   - metallb/
+  - mimir/
+  - minio/
   - nvidia-device-plugin/
   - redis/
   - reflector/
   - sealed-secrets/
   - tailscale/
+  - tempo/
   - traefik-config/

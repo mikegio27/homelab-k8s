@@ -1,0 +1,117 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: loki
+  namespace: loki
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: loki
+      version: "7.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: loki
+  values:
+    # Single-binary, all-in-one Loki — right size for a single-node homelab.
+    deploymentMode: SingleBinary
+
+    loki:
+      auth_enabled: false # internal-only, fronted by Grafana
+      commonConfig:
+        replication_factor: 1
+      # Chunks/index live in MinIO; only the WAL is on local disk.
+      storage:
+        type: s3
+        bucketNames:
+          chunks: loki-chunks
+          ruler: loki-ruler
+          admin: loki-admin
+        s3:
+          endpoint: minio.minio.svc.cluster.local:9000
+          region: us-east-1
+          accessKeyId: lgtm
+          secretAccessKey: ${lgtmPassword} # expanded from the reflected MinIO secret
+          s3ForcePathStyle: true
+          insecure: true # HTTP inside the cluster
+      schemaConfig:
+        configs:
+          - from: "2024-04-01"
+            store: tsdb
+            object_store: s3
+            schema: v13
+            index:
+              prefix: loki_index_
+              period: 24h
+      limits_config:
+        retention_period: 720h # 30d
+        reject_old_samples: true
+        reject_old_samples_max_age: 168h
+      compactor:
+        retention_enabled: true
+        delete_request_store: s3
+
+    # Pull the MinIO secret into every Loki pod and let Loki expand ${...} in config.
+    global:
+      extraArgs:
+        - "-config.expand-env=true"
+      extraEnvFrom:
+        - secretRef:
+            name: lgtm-minio-credentials
+
+    singleBinary:
+      replicas: 1
+      persistence:
+        enabled: true
+        storageClass: local-path
+        size: 10Gi
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 1Gi
+
+    # Zero out all the distributed/SSD targets — SingleBinary handles everything.
+    backend:
+      replicas: 0
+    read:
+      replicas: 0
+    write:
+      replicas: 0
+    ingester:
+      replicas: 0
+    distributor:
+      replicas: 0
+    querier:
+      replicas: 0
+    queryFrontend:
+      replicas: 0
+    queryScheduler:
+      replicas: 0
+    indexGateway:
+      replicas: 0
+    compactor:
+      replicas: 0
+    bloomCompactor:
+      replicas: 0
+    bloomGateway:
+      replicas: 0
+
+    # Don't deploy the optional extras (caches, nginx gateway, canary, tests).
+    chunksCache:
+      enabled: false
+    resultsCache:
+      enabled: false
+    gateway:
+      enabled: false
+    lokiCanary:
+      enabled: false
+    test:
+      enabled: false
+    monitoring:
+      selfMonitoring:
+        enabled: false
+      serviceMonitor:
+        enabled: false

@@ -12,6 +12,9 @@ spec:
     metadata:
       labels:
         app: prowlarr
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9707"
     spec:
       containers:
         - name: prowlarr
@@ -29,6 +32,29 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
+        - name: exportarr
+          image: ghcr.io/onedr0p/exportarr:v2.3.0
+          args: ["prowlarr"]
+          env:
+            - name: PORT
+              value: "9707"
+            - name: URL
+              value: "http://localhost:9696"
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: arr-exporter-keys
+                  key: prowlarr
+                  optional: true   # pod still starts before the key is sealed
+          ports:
+            - name: metrics
+              containerPort: 9707
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
       volumes:
         - name: config
           persistentVolumeClaim:

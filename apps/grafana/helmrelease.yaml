@@ -1,0 +1,109 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: grafana
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: grafana
+      version: "12.4.4"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: grafana
+  values:
+    persistence:
+      enabled: true
+      storageClassName: local-path
+      size: 5Gi
+
+    # The chart auto-generates an admin password into the `grafana` Secret —
+    # use it as break-glass access alongside Authentik SSO. Retrieve with:
+    #   kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d
+
+    # OIDC client credentials are injected from the `grafana-oidc` SealedSecret.
+    # optional:true means Grafana still boots if the secret isn't sealed yet —
+    # OIDC login simply stays inactive until then.
+    envValueFrom:
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID:
+        secretKeyRef:
+          name: grafana-oidc
+          key: clientId
+          optional: true
+      GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET:
+        secretKeyRef:
+          name: grafana-oidc
+          key: clientSecret
+          optional: true
+
+    # We front Grafana with a Traefik IngressRoute (ingress.yaml), not the chart's Ingress.
+    ingress:
+      enabled: false
+
+    grafana.ini:
+      server:
+        root_url: https://grafana.dozydelta.com
+      auth:
+        # Hide the generic OAuth name on the login button; flip oauth_auto_login
+        # to true once you trust SSO and want to skip the Grafana login form.
+        oauth_auto_login: false
+      "auth.generic_oauth":
+        enabled: true
+        name: Authentik
+        allow_sign_up: true
+        use_pkce: true
+        scopes: "openid email profile"
+        auth_url: https://auth.dozydelta.com/application/o/authorize/
+        token_url: https://auth.dozydelta.com/application/o/token/
+        api_url: https://auth.dozydelta.com/application/o/userinfo/
+        # Map Authentik groups -> Grafana roles. Create these groups in Authentik
+        # (or adjust the names). Falls back to Viewer.
+        role_attribute_path: "contains(groups, 'grafana-admins') && 'Admin' || contains(groups, 'grafana-editors') && 'Editor' || 'Viewer'"
+        role_attribute_strict: false
+
+    # Provision the LGTM datasources so they're wired up on first boot.
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Mimir
+            type: prometheus
+            uid: mimir
+            access: proxy
+            url: http://mimir-gateway.mimir.svc.cluster.local/prometheus
+            isDefault: true
+            jsonData:
+              prometheusType: Mimir
+          - name: Loki
+            type: loki
+            uid: loki
+            access: proxy
+            url: http://loki.loki.svc.cluster.local:3100
+            jsonData:
+              # Click a trace_id in a log line to jump straight to Tempo.
+              derivedFields:
+                - name: TraceID
+                  matcherRegex: "trace_id=(\\w+)"
+                  datasourceUid: tempo
+                  url: "$${__value.raw}"
+          - name: Tempo
+            type: tempo
+            uid: tempo
+            access: proxy
+            url: http://tempo.tempo.svc.cluster.local:3100
+            jsonData:
+              tracesToLogsV2:
+                datasourceUid: loki
+              serviceMap:
+                datasourceUid: mimir
+              nodeGraph:
+                enabled: true
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi

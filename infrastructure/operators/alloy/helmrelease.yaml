@@ -1,0 +1,195 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy
+  namespace: alloy
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: alloy
+      version: "1.9.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: alloy
+  values:
+    # Single-node homelab: one Deployment collects everything (logs via the
+    # Kubernetes API, so no per-node duplication and no hostPath mounts).
+    controller:
+      type: deployment
+      replicas: 1
+
+    # Expose the OTLP receiver ports on the alloy Service so apps can send
+    # traces to alloy.alloy.svc.cluster.local:4317 / :4318.
+    alloy:
+      clustering:
+        enabled: false
+      extraPorts:
+        - name: otlp-grpc
+          port: 4317
+          targetPort: 4317
+          protocol: TCP
+        - name: otlp-http
+          port: 4318
+          targetPort: 4318
+          protocol: TCP
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 1Gi
+      configMap:
+        content: |-
+          //////////////////////////////  LOGS -> Loki  //////////////////////////////
+          discovery.kubernetes "pods" {
+            role = "pod"
+          }
+
+          discovery.relabel "pod_logs" {
+            targets = discovery.kubernetes.pods.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_name"]
+              target_label  = "pod"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_container_name"]
+              target_label  = "container"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_node_name"]
+              target_label  = "node"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
+              separator     = "/"
+              target_label  = "job"
+            }
+          }
+
+          loki.source.kubernetes "pods" {
+            targets    = discovery.relabel.pod_logs.output
+            forward_to = [loki.write.default.receiver]
+          }
+
+          loki.write "default" {
+            endpoint {
+              url = "http://loki.loki.svc.cluster.local:3100/loki/api/v1/push"
+            }
+          }
+
+          //////////////////////////////  METRICS -> Mimir  //////////////////////////////
+          // Scrape pods that opt in with the prometheus.io/scrape annotation.
+          discovery.relabel "pod_metrics" {
+            targets = discovery.kubernetes.pods.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+              regex         = "true"
+              action        = "keep"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+              regex         = "(.+)"
+              target_label  = "__metrics_path__"
+            }
+            rule {
+              source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+              regex         = "([^:]+)(?::\\d+)?;(\\d+)"
+              replacement   = "$1:$2"
+              target_label  = "__address__"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_name"]
+              target_label  = "pod"
+            }
+          }
+
+          prometheus.scrape "pods" {
+            targets         = discovery.relabel.pod_metrics.output
+            forward_to      = [prometheus.remote_write.mimir.receiver]
+            scrape_interval = "30s"
+          }
+
+          // Node / kubelet + cAdvisor metrics.
+          discovery.kubernetes "nodes" {
+            role = "node"
+          }
+
+          discovery.relabel "kubelet" {
+            targets = discovery.kubernetes.nodes.targets
+            rule {
+              target_label = "__metrics_path__"
+              replacement  = "/metrics"
+            }
+          }
+
+          discovery.relabel "cadvisor" {
+            targets = discovery.kubernetes.nodes.targets
+            rule {
+              target_label = "__metrics_path__"
+              replacement  = "/metrics/cadvisor"
+            }
+          }
+
+          prometheus.scrape "kubelet" {
+            targets           = discovery.relabel.kubelet.output
+            scheme            = "https"
+            bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            tls_config {
+              ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+              insecure_skip_verify = true
+            }
+            forward_to      = [prometheus.remote_write.mimir.receiver]
+            scrape_interval = "30s"
+          }
+
+          prometheus.scrape "cadvisor" {
+            targets           = discovery.relabel.cadvisor.output
+            scheme            = "https"
+            bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            tls_config {
+              ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+              insecure_skip_verify = true
+            }
+            forward_to      = [prometheus.remote_write.mimir.receiver]
+            scrape_interval = "30s"
+          }
+
+          prometheus.remote_write "mimir" {
+            endpoint {
+              url = "http://mimir-gateway.mimir.svc.cluster.local/api/v1/push"
+            }
+          }
+
+          //////////////////////////////  TRACES -> Tempo  //////////////////////////////
+          otelcol.receiver.otlp "default" {
+            grpc {
+              endpoint = "0.0.0.0:4317"
+            }
+            http {
+              endpoint = "0.0.0.0:4318"
+            }
+            output {
+              traces = [otelcol.exporter.otlp.tempo.input]
+            }
+          }
+
+          otelcol.exporter.otlp "tempo" {
+            client {
+              endpoint = "tempo.tempo.svc.cluster.local:4317"
+              tls {
+                insecure = true
+              }
+            }
+          }

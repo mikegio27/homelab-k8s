@@ -1,0 +1,103 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mimir
+  namespace: mimir
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: mimir-distributed
+      version: "6.0.6"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: mimir
+  # mimir-distributed has no monolithic mode, so we run every component at a
+  # single replica with replication_factor 1 — the smallest sensible footprint
+  # for a single-node homelab. The chart already runs each component with
+  # -config.expand-env=true, so ${lgtmPassword} below is expanded at runtime.
+  values:
+    # Use our standalone MinIO, not the chart's bundled one.
+    minio:
+      enabled: false
+
+    global:
+      extraEnvFrom:
+        - secretRef:
+            name: lgtm-minio-credentials
+
+    mimir:
+      structuredConfig:
+        multitenancy_enabled: false # single-user homelab, no X-Scope-OrgID
+        common:
+          storage:
+            backend: s3
+            s3:
+              endpoint: minio.minio.svc.cluster.local:9000
+              access_key_id: lgtm
+              secret_access_key: ${lgtmPassword}
+              insecure: true # HTTP inside the cluster
+        blocks_storage:
+          s3:
+            bucket_name: mimir-blocks
+        ruler_storage:
+          s3:
+            bucket_name: mimir-ruler
+        alertmanager_storage:
+          s3:
+            bucket_name: mimir-alertmanager
+        ingester:
+          ring:
+            replication_factor: 1
+        limits:
+          compactor_blocks_retention_period: 30d
+
+    # ---- single-replica core path ----
+    distributor:
+      replicas: 1
+    ingester:
+      replicas: 1
+      zoneAwareReplication:
+        enabled: false
+      persistentVolume:
+        storageClass: local-path
+        size: 10Gi
+    querier:
+      replicas: 1
+    query_frontend:
+      replicas: 1
+    query_scheduler:
+      enabled: false # query-frontend talks to queriers directly at this scale
+    store_gateway:
+      replicas: 1
+      zoneAwareReplication:
+        enabled: false
+      persistentVolume:
+        storageClass: local-path
+        size: 10Gi
+    compactor:
+      replicas: 1
+      persistentVolume:
+        storageClass: local-path
+        size: 10Gi
+    gateway:
+      replicas: 1 # single nginx entrypoint used by Alloy + Grafana
+
+    # ---- trim everything optional for a lean homelab ----
+    ruler:
+      enabled: false # bucket exists; flip on if you want recording/alert rules
+    alertmanager:
+      enabled: false # Grafana unified alerting handles alerts
+    overrides_exporter:
+      enabled: false
+    rollout_operator:
+      enabled: false
+    chunks-cache:
+      enabled: false
+    index-cache:
+      enabled: false
+    metadata-cache:
+      enabled: false
+    results-cache:
+      enabled: false

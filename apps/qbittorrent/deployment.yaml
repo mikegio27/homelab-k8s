@@ -12,6 +12,9 @@ spec:
     metadata:
       labels:
         app: qbittorrent
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8090"
     spec:
       initContainers:
         - name: gluetun
@@ -64,6 +67,27 @@ spec:
               mountPath: /config
             - name: downloads
               mountPath: /downloads
+
+        # Shares the pod network namespace (incl. the Gluetun VPN), so it reaches
+        # the WebUI on localhost. qBittorrent's "Bypass authentication for clients
+        # on localhost" lets it scrape without creds; if you've disabled that, add
+        # QBITTORRENT_USERNAME/PASSWORD env (e.g. from a SealedSecret).
+        - name: metrics-exporter
+          image: ghcr.io/martabal/qbittorrent-exporter:latest
+          env:
+            - name: QBITTORRENT_BASE_URL
+              value: "http://localhost:8080"
+            - name: EXPORTER_PORT
+              value: "8090"
+          ports:
+            - name: metrics
+              containerPort: 8090
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
 
       volumes:
         - name: config

@@ -1,6 +1,7 @@
 resources:
   - namespace.yaml
   - pvcs.yaml
+  - sealed-secret.yaml
   - bazarr-deployment.yaml
   - prowlarr-deployment.yaml
   - sonarr-deployment.yaml

@@ -1,0 +1,9 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: grafana
+  namespace: alloy
+spec:
+  interval: 24h
+  # alloy is published on grafana.github.io (still Grafana-maintained).
+  url: https://grafana.github.io/helm-charts

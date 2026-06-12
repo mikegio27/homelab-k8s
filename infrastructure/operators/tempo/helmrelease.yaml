@@ -1,0 +1,56 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tempo
+  namespace: tempo
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: tempo
+      version: "1.24.4"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: tempo
+  # Monolithic single-binary Tempo. Traces land in MinIO; only the WAL is local.
+  values:
+    tempo:
+      retention: 336h        # 14d
+      storage:
+        trace:
+          backend: s3
+          s3:
+            bucket: tempo-traces
+            endpoint: minio.minio.svc.cluster.local:9000
+            access_key: lgtm
+            secret_key: ${S3_SECRET_KEY}    # expanded from the reflected MinIO secret
+            insecure: true                   # HTTP inside the cluster
+            forcepathstyle: true
+      # Only accept OTLP — Alloy forwards everything as OTLP.
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
+      # Let Tempo expand ${S3_SECRET_KEY} in its config file.
+      extraArgs:
+        "config.expand-env": "true"
+      extraEnv:
+        - name: S3_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: lgtm-minio-credentials
+              key: lgtmPassword
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 1Gi
+
+    # WAL on ephemeral disk is fine for a homelab — unflushed traces are transient.
+    persistence:
+      enabled: false

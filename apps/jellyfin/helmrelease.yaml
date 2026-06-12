@@ -13,6 +13,14 @@ spec:
         name: jellyfin
         namespace: jellyfin
   values:
+    # Jellyfin serves /metrics on 8096, but ONLY after metrics are enabled in its
+    # config: Dashboard > Networking > "Enable Prometheus metrics" (or set
+    # <EnableMetrics>true</EnableMetrics> in config/network.xml), then restart.
+    # Until then this scrape target returns 404 — flip that toggle to activate it.
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8096"
+      prometheus.io/path: "/metrics"
     image:
       tag: "10.11.11"
     persistence:

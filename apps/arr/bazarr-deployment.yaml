@@ -17,6 +17,9 @@ spec:
     metadata:
       labels:
         app: bazarr
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9707"
     spec:
       containers:
         - name: bazarr
@@ -36,6 +39,29 @@ spec:
               mountPath: /config
             - name: media
               mountPath: /media
+        - name: exportarr
+          image: ghcr.io/onedr0p/exportarr:v2.3.0
+          args: ["bazarr"]
+          env:
+            - name: PORT
+              value: "9707"
+            - name: URL
+              value: "http://localhost:6767"
+            - name: API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: arr-exporter-keys
+                  key: bazarr
+                  optional: true   # pod still starts before the key is sealed
+          ports:
+            - name: metrics
+              containerPort: 9707
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 64Mi
       volumes:
         - name: config
           persistentVolumeClaim:

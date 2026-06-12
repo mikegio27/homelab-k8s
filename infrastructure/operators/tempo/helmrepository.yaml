@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: grafana
+  namespace: tempo
+spec:
+  interval: 24h
+  # Pinned to the last grafana.github.io tempo chart (1.24.4). The newer
+  # tempo 2.x chart lives at https://grafana-community.github.io/helm-charts.
+  url: https://grafana.github.io/helm-charts
