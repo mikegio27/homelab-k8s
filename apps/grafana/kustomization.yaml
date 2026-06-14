@@ -113,6 +113,14 @@ configMapGenerator:
     options:
       labels: { grafana_dashboard: "1" }
       annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Immich }
+  # --- Authentik (SSO / identity provider) ---
+  - name: grafana-dashboard-authentik
+    namespace: grafana
+    files:
+      - authentik.json=dashboards/authentik.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Authentik }
 
 generatorOptions:
   # Keep ConfigMap names stable (no content hash suffix) so the sidecar folder
