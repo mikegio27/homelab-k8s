@@ -409,8 +409,8 @@
     {
       "id": 7,
       "type": "stat",
-      "title": "DB Volume Used",
-      "description": "",
+      "title": "NFS Pool Used %",
+      "description": "immich-db is NFS-backed; this is the shared tank pool usage, not the DB's own size",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1477,8 +1477,8 @@
     {
       "id": 22,
       "type": "timeseries",
-      "title": "Database Volume Usage",
-      "description": "",
+      "title": "NFS Tank Pool (immich-db backend)",
+      "description": "immich-db sits on the shared NFS tank pool \u2014 this tracks the whole pool, not the database's own footprint",
       "datasource": {
         "type": "prometheus",
         "uid": "${datasource}"
@@ -1561,7 +1561,7 @@
             "uid": "${datasource}"
           },
           "expr": "kubelet_volume_stats_used_bytes{namespace=\"immich\",persistentvolumeclaim=~\"immich-db.*\"}",
-          "legendFormat": "used",
+          "legendFormat": "pool used",
           "refId": "A"
         },
         {
@@ -1570,7 +1570,7 @@
             "uid": "${datasource}"
           },
           "expr": "kubelet_volume_stats_capacity_bytes{namespace=\"immich\",persistentvolumeclaim=~\"immich-db.*\"}",
-          "legendFormat": "capacity",
+          "legendFormat": "pool total",
           "refId": "B"
         }
       ]
