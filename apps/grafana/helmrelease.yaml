@@ -18,6 +18,19 @@ spec:
       storageClassName: local-path
       size: 5Gi
 
+    # Watch for ConfigMaps labelled grafana_dashboard: "1" in the grafana
+    # namespace and load them as dashboards without a restart. Dashboards live
+    # in dashboards/ and are turned into labelled ConfigMaps by kustomize.
+    # The folderAnnotation lets each ConfigMap pick its own Grafana folder.
+    sidecar:
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        labelValue: "1"
+        folderAnnotation: k8s-sidecar-target-directory
+        provider:
+          foldersFromFilesStructure: true
+
     # The chart auto-generates an admin password into the `grafana` Secret —
     # use it as break-glass access alongside Authentik SSO. Retrieve with:
     #   kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d

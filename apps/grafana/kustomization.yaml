@@ -6,3 +6,23 @@ resources:
   # sealed-secret.yaml is intentionally NOT listed — it is a template you must
   # fill in and seal yourself (see the file + README). Grafana starts fine
   # without it; only OIDC login is inactive until the secret exists.
+
+# Dashboards are shipped as ConfigMaps labelled grafana_dashboard: "1" so the
+# Grafana sidecar (enabled in helmrelease.yaml) auto-loads them on the fly.
+# Drop a new *.json file in dashboards/ and add it to a generator below.
+configMapGenerator:
+  - name: grafana-dashboard-robodoze
+    namespace: grafana
+    files:
+      - robodoze-dashboard.json=dashboards/robodoze-dashboard.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        # Sidecar drops the dashboard into this Grafana folder.
+        k8s-sidecar-target-directory: /tmp/dashboards/RoboDoze
+
+generatorOptions:
+  # Keep ConfigMap names stable (no content hash suffix) so the sidecar folder
+  # mapping and any future references stay predictable.
+  disableNameSuffixHash: true
