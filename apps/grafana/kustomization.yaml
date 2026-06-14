@@ -39,6 +39,80 @@ configMapGenerator:
         grafana_dashboard: "1"
       annotations:
         k8s-sidecar-target-directory: /tmp/dashboards/Homelab
+  # --- Arr suite (one dashboard per app) ---
+  - name: grafana-dashboard-arr-sonarr
+    namespace: grafana
+    files:
+      - arr-sonarr.json=dashboards/arr-sonarr.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Arr }
+  - name: grafana-dashboard-arr-radarr
+    namespace: grafana
+    files:
+      - arr-radarr.json=dashboards/arr-radarr.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Arr }
+  - name: grafana-dashboard-arr-prowlarr
+    namespace: grafana
+    files:
+      - arr-prowlarr.json=dashboards/arr-prowlarr.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Arr }
+  - name: grafana-dashboard-arr-bazarr
+    namespace: grafana
+    files:
+      - arr-bazarr.json=dashboards/arr-bazarr.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Arr }
+  - name: grafana-dashboard-qbittorrent
+    namespace: grafana
+    files:
+      - qbittorrent.json=dashboards/qbittorrent.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Arr }
+  # --- Networking ---
+  - name: grafana-dashboard-net-traefik
+    namespace: grafana
+    files:
+      - net-traefik.json=dashboards/net-traefik.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Networking }
+  - name: grafana-dashboard-net-metallb
+    namespace: grafana
+    files:
+      - net-metallb.json=dashboards/net-metallb.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Networking }
+  - name: grafana-dashboard-net-tailscale
+    namespace: grafana
+    files:
+      - net-tailscale.json=dashboards/net-tailscale.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Networking }
+  # --- Storage ---
+  - name: grafana-dashboard-storage
+    namespace: grafana
+    files:
+      - storage-overview.json=dashboards/storage-overview.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Storage }
+  # --- Immich (app + its Postgres/CNPG + Valkey) ---
+  - name: grafana-dashboard-immich
+    namespace: grafana
+    files:
+      - immich.json=dashboards/immich.json
+    options:
+      labels: { grafana_dashboard: "1" }
+      annotations: { k8s-sidecar-target-directory: /tmp/dashboards/Immich }
 
 generatorOptions:
   # Keep ConfigMap names stable (no content hash suffix) so the sidecar folder
