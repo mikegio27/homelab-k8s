@@ -21,6 +21,24 @@ configMapGenerator:
       annotations:
         # Sidecar drops the dashboard into this Grafana folder.
         k8s-sidecar-target-directory: /tmp/dashboards/RoboDoze
+  - name: grafana-dashboard-jellyfin
+    namespace: grafana
+    files:
+      - jellyfin-dashboard.json=dashboards/jellyfin-dashboard.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        k8s-sidecar-target-directory: /tmp/dashboards/Jellyfin
+  - name: grafana-dashboard-homelab
+    namespace: grafana
+    files:
+      - homelab-overview.json=dashboards/homelab-overview.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+      annotations:
+        k8s-sidecar-target-directory: /tmp/dashboards/Homelab
 
 generatorOptions:
   # Keep ConfigMap names stable (no content hash suffix) so the sidecar folder
