@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: authentik-blueprints
+  namespace: authentik
+  labels:
+    app.kubernetes.io/part-of: authentik
+data:
+  # Discovered + applied by the authentik worker (only *.yaml keys are loaded).
+  # Pins the Dozynet proxy outpost's k8s integration config so the generated
+  # Ingress (ak-outpost-dozynet) always references the cert-manager wildcard
+  # secret instead of the never-created `authentik-outpost-tls` default.
+  # NOTE: `config` is replaced wholesale by the blueprint, so the FULL current
+  # config is reproduced here with only kubernetes_ingress_secret_name changed.
+  # `providers` is intentionally omitted so existing app bindings are untouched.
+  dozynet-outpost.yaml: |
+    version: 1
+    metadata:
+      name: dozynet-outpost-tls
+      labels:
+        blueprints.goauthentik.io/instantiate: "true"
+    entries:
+      - model: authentik_outposts.outpost
+        identifiers:
+          name: Dozynet
+        attrs:
+          type: proxy
+          config:
+            log_level: info
+            docker_labels: null
+            authentik_host: https://auth.dozydelta.com/
+            docker_network: null
+            container_image: null
+            docker_map_ports: true
+            refresh_interval: minutes=5
+            kubernetes_replicas: 1
+            kubernetes_namespace: authentik
+            authentik_host_browser: ""
+            object_naming_template: ak-outpost-%(name)s
+            authentik_host_insecure: false
+            # Bound the forward-auth response body (Traefik DoS-hardening warning).
+            # Patched onto the auto-generated `ak-outpost-dozynet` Middleware via
+            # the "traefik middleware" reconciler key. Auth responses are tiny
+            # (headers only), so 1 MiB is generous headroom while killing the
+            # "unlimited body size" vector.
+            kubernetes_json_patches:
+              traefik middleware:
+                - op: add
+                  path: /spec/forwardAuth/maxResponseBodySize
+                  value: 1048576
+            kubernetes_service_type: ClusterIP
+            kubernetes_ingress_path_type: null
+            kubernetes_image_pull_secrets: []
+            kubernetes_ingress_class_name: null
+            kubernetes_disabled_components: []
+            kubernetes_ingress_annotations: {}
+            kubernetes_ingress_secret_name: dozydelta-wildcard-tls
+            kubernetes_httproute_annotations: {}
+            kubernetes_httproute_parent_refs: []

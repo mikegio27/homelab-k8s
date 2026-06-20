@@ -4,4 +4,5 @@ resources:
   - sealedsecret.yaml
   - namespace.yaml
   - ingress.yaml
+  - blueprint-outpost-dozynet.yaml
   

@@ -29,6 +29,12 @@ spec:
         host: redis-master.redis.svc.cluster.local
         port: 6379
 
+    # Mount the outpost blueprint ConfigMap into /blueprints so the worker
+    # applies it. Only *.yaml keys are discovered. See blueprint-outpost-dozynet.yaml.
+    blueprints:
+      configMaps:
+        - authentik-blueprints
+
     server:
       ingress:
         enabled: false            # we manage IngressRoute ourselves
